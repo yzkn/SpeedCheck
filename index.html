@@ -1,13 +1,35 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><script src="jquery-2.2.4.min.js"></script>
-<script>
-$(window).load(function(){
-var start=(new Date()).getTime();
-$.get('check.png?'+start,function(data) {
-var end=(new Date()).getTime();
-var msec=end-start;
-var mbps=((1000*(data.length))/msec)/(1024*1024);
-$('#result').html((mbps.toFixed(5))+'MB/s');
-});
-});
-</script></head><body><div id='result'></div></body></html>
-<!--  Copyright (c) 20xx YA-androidapp(https://github.com/YA-androidapp) All rights reserved. -->
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <script>
+        const NUM_OF_DOWNLOAD = 10;
+
+        window.addEventListener('DOMContentLoaded', async (event) => {
+            let sum = 0;
+
+            for (let i = 0; i < NUM_OF_DOWNLOAD; i++) {
+                const start = (new Date()).getTime();
+                const imageData = await getImage();
+                const msec = ((new Date()).getTime()) - start;
+                const mBps = (1000 * imageData.size) / (1024 * 1024 * msec);
+                sum += mBps;
+            }
+            document.getElementById('result').innerHTML = ((sum / NUM_OF_DOWNLOAD).toFixed(5)) + 'MB/s';
+        });
+
+        async function getImage() {
+            const res = await fetch('check.png')
+            const blob = await res.blob()
+            return blob
+        }
+    </script>
+</head>
+
+<body>
+    <div id='result'></div>
+</body>
+
+</html>
+<!--  Copyright (c) 2022 YA-androidapp(https://github.com/YA-androidapp) All rights reserved. -->
