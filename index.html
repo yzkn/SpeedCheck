@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <script>
+        const IMAGE_URI = 'https://cdn.jsdelivr.net/gh/ya-androidapp/SpeedCheck@latest/check.png'; // 'check.png';
         const NUM_OF_DOWNLOAD = 10;
 
         window.addEventListener('DOMContentLoaded', async (event) => {
@@ -20,7 +21,7 @@
         });
 
         async function getImage(start) {
-            const res = await fetch('check.png?' + start,
+            const res = await fetch(IMAGE_URI + '?' + start,
                 {
                     method: 'GET',
                     cache: 'no-cache'
