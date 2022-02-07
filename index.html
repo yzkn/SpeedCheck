@@ -11,7 +11,7 @@
 
             for (let i = 0; i < NUM_OF_DOWNLOAD; i++) {
                 const start = (new Date()).getTime();
-                const imageData = await getImage();
+                const imageData = await getImage(start);
                 const msec = ((new Date()).getTime()) - start;
                 const mBps = (1000 * imageData.size) / (1024 * 1024 * msec);
                 sum += mBps;
@@ -19,8 +19,12 @@
             document.getElementById('result').innerHTML = ((sum / NUM_OF_DOWNLOAD).toFixed(5)) + 'MB/s';
         });
 
-        async function getImage() {
-            const res = await fetch('check.png')
+        async function getImage(start) {
+            const res = await fetch('check.png?' + start,
+                {
+                    method: 'GET',
+                    cache: 'no-cache'
+                });
             const blob = await res.blob()
             return blob
         }

@@ -12,8 +12,8 @@ from PIL import Image
 
 
 BLOCK_SIZE = 1
-HEIGHT = 2000
-WIDTH = 2000
+HEIGHT = 3000
+WIDTH = 3000
 OUTPUT_FILE = 'check_{}x{}.png'.format(WIDTH, HEIGHT)
 
 
