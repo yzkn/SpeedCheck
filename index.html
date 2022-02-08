@@ -4,36 +4,86 @@
 <head>
     <meta charset="utf-8">
     <script>
-        const IMAGE_URI = 'https://cdn.jsdelivr.net/gh/ya-androidapp/SpeedCheck@latest/check.png'; // 'check.png';
+        const DOWNLOAD_IMAGE_URI = 'https://cdn.jsdelivr.net/gh/ya-androidapp/SpeedCheck@latest/check.png';
+        const UPLOAD_IMAGE_URI = '/img';
+        const UPLOAD_URI = 'http://localhost:5000/upload';
         const NUM_OF_DOWNLOAD = 10;
+        const NUM_OF_UPLOAD = 10;
 
-        window.addEventListener('DOMContentLoaded', async (event) => {
+        window.addEventListener('DOMContentLoaded', (event) => {
+            download();
+
+            upload_preparation();
+        });
+
+        async function download() {
             let sum = 0;
 
             for (let i = 0; i < NUM_OF_DOWNLOAD; i++) {
                 const start = (new Date()).getTime();
-                const imageData = await getImage(start);
+                const size = await getImage(start);
                 const msec = ((new Date()).getTime()) - start;
-                const mBps = (1000 * imageData.size) / (1024 * 1024 * msec);
+                const mBps = (1000 * size) / (1024 * 1024 * msec);
                 sum += mBps;
             }
-            document.getElementById('result').innerHTML = ((sum / NUM_OF_DOWNLOAD).toFixed(5)) + 'MB/s';
-        });
+            document.getElementById('result').innerHTML += ((sum / NUM_OF_DOWNLOAD).toFixed(5)) + 'MB/s';
+        }
+
+        function upload_preparation() {
+            var canvas = document.getElementById('canvas');
+            var c = canvas.getContext('2d');
+
+            var img = new Image();
+            img.onload = function () {
+                c.drawImage(img, 10, 10);
+                canvas.toBlob(function (blob) {
+                    upload(blob);
+                });
+            }
+            img.src = UPLOAD_IMAGE_URI;
+        }
+
+        async function upload(data) {
+            let sum = 0;
+
+            for (let i = 0; i < NUM_OF_UPLOAD; i++) {
+                const start = (new Date()).getTime();
+                const size = await postImage(data);
+                const msec = ((new Date()).getTime()) - start;
+                const mBps = (1000 * size) / (1024 * 1024 * msec);
+                sum += mBps;
+            }
+            document.getElementById('result').innerHTML += ((sum / NUM_OF_UPLOAD).toFixed(5)) + 'MB/s';
+        }
 
         async function getImage(start) {
-            const res = await fetch(IMAGE_URI + '?' + start,
+            const res = await fetch(DOWNLOAD_IMAGE_URI + '?' + start,
                 {
                     method: 'GET',
                     cache: 'no-cache'
                 });
-            const blob = await res.blob()
-            return blob
+            const blob = await res.blob();
+            return blob.size;
+        }
+
+        async function postImage(data) {
+            const fd = new FormData();
+            fd.append('file', data);
+
+            const res = await fetch(UPLOAD_URI,
+                {
+                    method: 'POST',
+                    body: fd
+                });
+            const json_data = await res.json();
+            return json_data['size'];
         }
     </script>
 </head>
 
 <body>
     <div id='result'></div>
+    <canvas id="canvas" width="2000" height="2000" style="display: none;"></canvas>
 </body>
 
 </html>
